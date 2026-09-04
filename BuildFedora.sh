@@ -52,7 +52,7 @@ while getopts ":dsiuhgbr" opt; do
     r )
 	SKIP_RAM_CHECK="1"
 	;;
-    h ) echo "Usage: ./BuildLinux.sh [-i][-u][-d][-s][-b][-g]"
+    h ) echo "Usage: ./BuildFedora.sh [-i][-u][-d][-s][-b][-g]"
         echo "   -i: Generate appimage (optional)"
         echo "   -g: force gtk2 build"
         echo "   -b: build in debug mode"
@@ -60,8 +60,8 @@ while getopts ":dsiuhgbr" opt; do
         echo "   -s: build qidi-studio (optional)"
         echo "   -u: only update clock & dependency packets (optional and need sudo)"
 	echo "   -r: skip free ram check (low ram compiling)"
-        echo "For a first use, you want to 'sudo ./BuildLinux.sh -u'"
-        echo "   and then './BuildLinux.sh -dsi'"
+        echo "For a first use, you want to 'sudo ./BuildFedora.sh -u'"
+        echo "   and then './BuildFedora.sh -dsi'"
         exit 0
         ;;
   esac
@@ -69,7 +69,7 @@ done
 
 if [ $OPTIND -eq 1 ]
 then
-    echo "Usage: ./BuildLinux.sh [-i][-u][-d][-s][-b][-g]"
+    echo "Usage: ./BuildFedora.sh [-i][-u][-d][-s][-b][-g]"
     echo "   -i: Generate appimage (optional)"
     echo "   -g: force gtk2 build"
     echo "   -b: build in debug mode"
@@ -77,8 +77,8 @@ then
     echo "   -s: build qidi-studio (optional)"
     echo "   -u: only update clock & dependency packets (optional and need sudo)"
     echo "   -r: skip free ram check (low ram compiling)"
-    echo "For a first use, you want to 'sudo ./BuildLinux.sh -u'"
-    echo "   and then './BuildLinux.sh -dsi'"
+    echo "For a first use, you want to 'sudo ./BuildFedora.sh -u'"
+    echo "   and then './BuildFedora.sh -dsi'"
     exit 0
 fi
 
@@ -101,25 +101,19 @@ if [[ -n "$UPDATE_LIB" ]]
 then
     echo -n -e "Updating linux ...\n"
     # hwclock -s # DeftDawg: Why does SuperSlicer want to do this?
-    apt update
+    dnf makecache
     if [[ -z "$FOUND_GTK3" ]]
     then
-        echo -e "\nInstalling: libgtk2.0-dev libglew-dev libudev-dev libdbus-1-dev cmake git\n"
-        apt install -y libgtk2.0-dev libglew-dev libudev-dev libdbus-1-dev cmake git
+        echo -e "\nInstalling: gtk2-devel glew-devel systemd-devel dbus-devel cmake git\n"
+        dnf install -y gtk2-devel glew-devel systemd-devel dbus-devel cmake git
     else
-        echo -e "\nFind libgtk-3, installing: libgtk-3-dev libglew-dev libudev-dev libdbus-1-dev cmake git\n"
-        apt install -y libgtk-3-dev libglew-dev libudev-dev libdbus-1-dev cmake git
-    fi
-    # for ubuntu 22.04:
-    ubu_version="$(cat /etc/issue)"
-    if [[ $ubu_version == "Ubuntu 22.04"* ]]
-    then
-        apt install -y curl libssl-dev libcurl4-openssl-dev m4
+        echo -e "\nFind gtk3-devel, installing: gtk3-devel glew-devel systemd-devel dbus-devel cmake git\n"
+        dnf install -y gtk3-devel glew-devel systemd-devel dbus-devel cmake git
     fi
     if [[ -n "$BUILD_DEBUG" ]]
     then
-        echo -e "\nInstalling: libssl-dev libcurl4-openssl-dev\n"
-        apt install -y libssl-dev libcurl4-openssl-dev
+        echo -e "\nInstalling: openssl-devel libcurl-devel\n"
+        dnf install -y openssl-devel libcurl-devel
     fi
     echo -e "done\n"
     exit 0
