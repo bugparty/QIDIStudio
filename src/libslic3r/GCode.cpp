@@ -8213,7 +8213,7 @@ std::string GCode::set_object_info(Print* print)
 
                     double sum_x = 0;
                     double sum_y = 0;
-                    Vec2d first_v(print->translate_to_print_space(polygon.points.at(0)).x()+ ext_x, print->translate_to_print_space(polygon.points.at(0)).y());
+                    const Vec2d first_v(print->translate_to_print_space(polygon.points.at(0)).x()+ ext_x, print->translate_to_print_space(polygon.points.at(0)).y());
                     
                     for (int i = 0; i < polygon.points.size(); i++) {
                         const auto v = print->translate_to_print_space(polygon.points.at(i));
@@ -8221,7 +8221,6 @@ std::string GCode::set_object_info(Print* print)
                             pa_area_poly_gcode << "[" << v.x() + ext_x << "," << v.y() << "],";
                             sum_x += v.x() + ext_x;
                             sum_y += v.y();
-                            first_v(v.x() + ext_x, v.y());
                         }
                         else if(i==1 || i == 2){
                             pa_area_poly_gcode << "[" << v.x()+ box_width << "," << v.y() << "],";
