@@ -4,6 +4,16 @@
 export ROOT=`pwd`
 export NCORES=`nproc --all`
 export CMAKE_BUILD_PARALLEL_LEVEL=${NCORES}
+# An active conda/miniforge environment prepends its own bin/ to PATH, and
+# CMake's find_package(... CONFIG) search treats PATH entries as candidate
+# install prefixes -- so a conda env can silently shadow a perfectly good
+# Fedora system library (e.g. zstd, used transitively by Boost::iostreams)
+# with an older/incompatible copy, baking that path into the built binary's
+# RPATH. Strip any active conda environment's bin dirs from PATH so the
+# Fedora system toolchain and libraries are used consistently.
+if [[ -n "$CONDA_PREFIX" ]]; then
+    PATH=$(echo "$PATH" | tr ':' '\n' | grep -vF "$CONDA_PREFIX" | paste -sd:)
+fi
 # Several bundled/third-party dependencies (and their own nested try_compile()
 # checks) declare cmake_minimum_required() below 3.5, which newer CMake
 # (>=4.0) refuses to configure at all. Setting this env var (rather than only
